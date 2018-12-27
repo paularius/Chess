@@ -76,7 +76,7 @@ public class SolutionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         void bind(int position, KnightPath path) {
-            solution.setText(String.format("%s. %s", position, path.getName()));
+            solution.setText(String.format("%s. %s", position + 1, path.getName()));
         }
 
         @Override
