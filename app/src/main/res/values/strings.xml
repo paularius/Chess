@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Chess</string>
+    <string name="solutions___header_with_values">Results:%1$d. The paths from Start Tile:(%2$s) to Destination Tile:(%3$s) are:</string>
+    <string name="solutions___header_no_values">No paths from Start Tile:(%1$s) to Destination Tile:(%2$s) were found</string>
 </resources>

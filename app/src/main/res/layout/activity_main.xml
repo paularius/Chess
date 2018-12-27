@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gv_chess_board">
 
@@ -51,8 +52,8 @@
             app:layout_constraintTop_toBottomOf="@id/rg_selection_type" />
     </android.support.constraint.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_solutions"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_solutions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
@@ -61,14 +62,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gv_chess_board">
 
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="The paths from the selected starting to the selected ending tile are the following:" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+    </android.support.v7.widget.RecyclerView>
 
 </android.support.constraint.ConstraintLayout>

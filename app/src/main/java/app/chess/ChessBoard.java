@@ -3,6 +3,9 @@ package app.chess;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Created by Paul on 27/12/2018
+ */
 public class ChessBoard {
     ArrayList<KnightPath> allPaths = new ArrayList<>();
     private ArrayList<ChessBoardTile> mTiles;
@@ -26,75 +29,60 @@ public class ChessBoard {
         }
     }
 
-    public void initPathSearch(ChessBoardTile startingTile, ChessBoardTile endingTile) {
+    public void initPathSearch(ChessBoardTile startingTile, ChessBoardTile endingTile, int maxSteps) {
         allPaths.clear();
         mVisitedTilesMap.clear();
         mVisitedTilesMap.put(startingTile.getName(), startingTile);
-        getNextStepTiles(startingTile, endingTile, null, 0);
+        getNextStepTiles(startingTile, endingTile, null, 0, maxSteps);
     }
 
-    ArrayList<KnightPath> getCorrectPaths() {
+    ArrayList<KnightPath> getAllPaths() {
         return allPaths;
     }
 
-    private void getNextStepTiles(ChessBoardTile startingTile, ChessBoardTile endingTile, KnightPath existingPath, int currentDepth) {
+
+    /**
+     * Compute recursively every path available from a starting tile and with a max depth given
+     *
+     * @param startingTile The tile from which the next steps are computed
+     * @param endingTile   If this tile is found, the path is considered correct and the calculation for more tiles stops.
+     * @param existingPath The path computed so far, so as to add new tiles.
+     * @param currentDepth The depth of the path so far, so as to compare it with the max depth requested by the user.
+     * @param maxDepth     The max depth of the path.
+     */
+    private void getNextStepTiles(ChessBoardTile startingTile, ChessBoardTile endingTile, KnightPath existingPath, int currentDepth, int maxDepth) {
         if (startingTile == null)
             return;
         int startingRow = startingTile.getRow();
         int startingColumn = startingTile.getColumn();
-        String one = String.format("%s-%s", startingRow + 2, startingColumn - 1);
-        String two = String.format("%s-%s", startingRow + 2, startingColumn + 1);
-        String three = String.format("%s-%s", startingRow - 1, startingColumn + 2);
-        String four = String.format("%s-%s", startingRow + 1, startingColumn + 2);
-        String five = String.format("%s-%s", startingRow - 2, startingColumn + 1);
-        String six = String.format("%s-%s", startingRow - 2, startingColumn - 1);
-        String seven = String.format("%s-%s", startingRow - 1, startingColumn - 2);
-        String eight = String.format("%s-%s", startingRow + 1, startingColumn - 2);
+        int[] dx = {2, 2, -1, 1, -2, -2, -1, 1};
+        int[] dy = {-1, 1, 2, 2, 1, -1, -2, -2};
 
-        createKnightPath(endingTile, existingPath, currentDepth, one);
-        createKnightPath(endingTile, existingPath, currentDepth, two);
-        createKnightPath(endingTile, existingPath, currentDepth, three);
-        createKnightPath(endingTile, existingPath, currentDepth, four);
-        createKnightPath(endingTile, existingPath, currentDepth, five);
-        createKnightPath(endingTile, existingPath, currentDepth, six);
-        createKnightPath(endingTile, existingPath, currentDepth, seven);
-        createKnightPath(endingTile, existingPath, currentDepth, eight);
+        for (int i = 0; i < 8; i++) {
+            String tileName = String.format("%s-%s", startingRow + dx[i], startingColumn + dy[i]);
+            createKnightPath(endingTile, existingPath, currentDepth, maxDepth, tileName);
+        }
     }
 
-    private void createKnightPath(ChessBoardTile endingTile, KnightPath existingPath, int currentDepth, String one) {
-        if (mVisitedTilesMap.containsKey(one))
+    private void createKnightPath(ChessBoardTile endingTile, KnightPath existingPath, int currentDepth, int maxSteps, String currentTileName) {
+        if (mVisitedTilesMap.containsKey(currentTileName))
             return;
-        if (mTilesMap.containsKey(one)) {
-            KnightPath path = new KnightPath(currentDepth);
-            ChessBoardTile newTile = mTilesMap.get(one);
-            if (endingTile != null && one.equals(endingTile.getName())) {
+        if (mTilesMap.containsKey(currentTileName)) {
+            KnightPath path = new KnightPath(mStartingTile);
+            ChessBoardTile newTile = mTilesMap.get(currentTileName);
+            if (endingTile != null && currentTileName.equals(endingTile.getName())) {
                 path.isCorrect = true;
             }
-            switch (currentDepth) {
-                case 0:
-                    path.addTile(newTile);
-                    if (!path.isCorrect) {
-                        mVisitedTilesMap.put(one, newTile);
-                        getNextStepTiles(path.getTile(0), endingTile, path, 1);
-                    }
-                    break;
-                case 1:
-                    path.addTile(existingPath.getTile(0));
-                    path.addTile(newTile);
-                    if (!path.isCorrect) {
-                        mVisitedTilesMap.put(one, newTile);
-                        getNextStepTiles(path.getTile(1), endingTile, path, 2);
-                    }
-                    break;
-                case 2:
-                    path.addTile(existingPath.getTile(0));
-                    path.addTile(existingPath.getTile(1));
-                    path.addTile(newTile);
-                    break;
-                default:
-                    break;
+            for (int i = 0; i < currentDepth; i++) {
+                if (i < existingPath.tileArray.size()) {
+                    path.addTile(existingPath.getTile(i));
+                }
             }
-
+            path.addTile(newTile);
+            if (!path.isCorrect && currentDepth + 1 < maxSteps) {
+                mVisitedTilesMap.put(currentTileName, newTile);
+                getNextStepTiles(path.getTile(currentDepth), endingTile, path, currentDepth + 1, maxSteps);
+            }
             allPaths.add(path);
         }
     }

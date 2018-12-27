@@ -1,4 +1,4 @@
-package app.chess;
+package app.chess.adapters;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -11,6 +11,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import app.chess.ChessBoard;
+import app.chess.ChessBoardTile;
+import app.chess.R;
+
+/**
+ * Created by Paul on 27/12/2018
+ */
 public class ChessBoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int RADIO_NONE = 0;
@@ -27,6 +34,7 @@ public class ChessBoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private ChessBoard mBoard;
     private Context mContext;
     private int mSelectedRadio = RADIO_NONE;
+    private boolean mIsEnabled;
 
     public ChessBoardAdapter(Context context, ChessBoard board) {
         mBoard = board;
@@ -46,8 +54,8 @@ public class ChessBoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private void initColors() {
         whiteColor = mContext.getResources().getColor(android.R.color.white);
         blackColor = mContext.getResources().getColor(android.R.color.black);
-        startColor = mContext.getResources().getColor(android.R.color.holo_green_dark);
-        endColor = mContext.getResources().getColor(android.R.color.holo_purple);
+        startColor = mContext.getResources().getColor(android.R.color.holo_green_light);
+        endColor = mContext.getResources().getColor(android.R.color.holo_red_dark);
     }
 
     @NonNull
@@ -75,6 +83,10 @@ public class ChessBoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         Point size = new Point();
         display.getSize(size);
         return size;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        mIsEnabled = isEnabled;
     }
 
     private class TileViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -107,6 +119,8 @@ public class ChessBoardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         @Override
         public void onClick(View view) {
+            if (!mIsEnabled)
+                return;
             if (mSelectedRadio == RADIO_START) {
                 int indexThatChanged = -1;
                 if (mBoard.getEndingTile() != null && mBoard.getEndingTile().equals(tile))

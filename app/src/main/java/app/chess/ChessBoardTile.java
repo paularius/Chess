@@ -1,5 +1,8 @@
 package app.chess;
 
+/**
+ * Created by Paul on 27/12/2018
+ */
 public class ChessBoardTile {
     private int mRow;
     private int mColumn;
